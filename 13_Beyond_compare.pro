@@ -13,9 +13,15 @@ TEMPLATE = app
 
 
 SOURCES += src/main.cpp\
-        src/mainwindow.cpp
+        src/mainwindow.cpp \
+    src/fileview.cpp \
+    src/comparingresult.cpp \
+    src/comparinginformation.cpp
 
 HEADERS  += src/mainwindow.h \
-    src/common.h
+    src/common.h \
+    src/fileview.h \
+    src/comparingresult.h \
+    src/comparinginformation.h
 
 FORMS    +=
