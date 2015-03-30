@@ -7,35 +7,58 @@
 #include "fileview.h"
 #include "comparinginformation.h"
 #include "comparingresult.h"
+#include "copythread.h"
+#include "copyprocess.h"
 
 #include "common.h"
+
+
+class CCopyThread;
 
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 
-public:
+public:	/* 생성,소멸자 */
 	explicit MainWindow(QWidget *parent = 0);
-	~MainWindow();
+	virtual ~MainWindow();
 
-private:		/* 함수 선언부 */
+private:		/* Private 함수 선언부 */
 	void initMenus ( void );
 	void initLayout ( void );
+	void drawWindowAtCenter ( void );
 
-private slots:
-	void openFiles ( void );
+	void compareFiles ( void );
+	QFileInfoList obtainFilesCopied( void );
 
-private:		/* 변수 선언부 */
-	QMenu * m_cFileMenu;
-	QAction * m_cOpen;
-	QAction * m_cExit;
+private slots:	/* Private Slot 함수 선언부 */
+	void slotOpenFiles ( void );
+
+	void slotRunFileview ( void );
+	void slotSortContents (int column, Qt::SortOrder order);
+
+	void slotCopyStart (void );
+	void slotCopyFinished (int);
+
+	void slotFileNameCopied (QString strFileName);
+
+
+signals:	/* Signal 선언부 */
+	// none
+
+private:		/* Private 변수 선언부 */
+	QMenu * m_fileMenu;
+	QAction * m_openAction;
+	QAction * m_exitAction;
 
 	CFileView *m_cLFileView;
 	CFileView *m_cRFileView;
-
 	CComparingResult * m_cCmpRes;
 	CComparingInformation * m_cCmpInfo;
 
+	CCopyProcess * m_cCopyProcess;
+
+	bool m_isReload;
 };
 
 #endif // MAINWINDOW_H

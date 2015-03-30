@@ -1,0 +1,17 @@
+
+# build
+build
+*.o
+*.a
+*.la
+*.so
+
+# Excutable
+beyond_compare
+
+# Mac
+.DS_Store
+
+# Qt
+*.pro.user
+*.rcc
