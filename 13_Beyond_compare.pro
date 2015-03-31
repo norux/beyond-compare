@@ -25,3 +25,6 @@ HEADERS  += src/mainwindow.h \
     src/comparinginformation.h
 
 FORMS    +=
+
+RESOURCES += \
+    resource/resource.qrc

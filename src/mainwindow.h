@@ -18,21 +18,21 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
-private:		/* 함수 선언부 */
-	void initMenus ( void );
-	void initLayout ( void );
-
 private slots:
 	void openFiles ( void );
 
+private:		/* 함수 선언부 */
+	void initMenus ( void );
+	void initLayout ( void );
+	void drawWindowAtCenter ( void );
+
 private:		/* 변수 선언부 */
-	QMenu * m_cFileMenu;
-	QAction * m_cOpen;
-	QAction * m_cExit;
+	QMenu * m_fileMenu;
+	QAction * m_openAction;
+	QAction * m_exitAction;
 
 	CFileView *m_cLFileView;
 	CFileView *m_cRFileView;
-
 	CComparingResult * m_cCmpRes;
 	CComparingInformation * m_cCmpInfo;
 

@@ -1,20 +1,27 @@
 #ifndef CCOMPARINGINFORMATION_H
 #define CCOMPARINGINFORMATION_H
 
-#include <QWidget>
+#include <QLayout>
+#include <QLabel>
+#include <QListView>
 
 #include "common.h"
 
-class CComparingInformation : public QWidget
+class CComparingInformation : public QVBoxLayout
 {
-	Q_OBJECT
 public:
-	explicit CComparingInformation(QWidget *parent = 0);
+	CComparingInformation();
 	~CComparingInformation();
 
-signals:
+private:	/* 함수 선언부 */
+	void initLayout ( void );
 
-public slots:
+	QLabel * createLabel (const QString & text);
+	QListView * createListView ( void );
+
+private:	/* 변수 선언부 */
+	QLabel * m_statusbarLabel;
+	QListView * m_statusbarListView;
 };
 
 #endif // CCOMPARINGINFORMATION_H

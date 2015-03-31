@@ -1,20 +1,29 @@
 #ifndef CCOMPARINGRESULT_H
 #define CCOMPARINGRESULT_H
 
-#include <QListWidget>
+#include <QLayout>
+#include <QTableWidget>
+#include <QLabel>
+#include <QHeaderView>
 
 #include "common.h"
 
-class CComparingResult : public QListWidget
+class CComparingResult : public QVBoxLayout
 {
-	Q_OBJECT
 public:
-	explicit CComparingResult(QListWidget *parent = 0);
+	CComparingResult();
 	~CComparingResult();
 
-signals:
+private:	/* 함수 선언부 */
+	void initLayout ( void );
 
-public slots:
+	QLabel * createLabel (const QString & text);
+	QTableWidget * createTableWidget ();
+
+private:	/* 변수 선언부 */
+	QLabel * m_paddingLabel;
+	QTableWidget * m_resultViewTable;
+
 };
 
 #endif // CCOMPARINGRESULT_H
