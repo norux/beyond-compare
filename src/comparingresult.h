@@ -1,6 +1,7 @@
 #ifndef CCOMPARINGRESULT_H
 #define CCOMPARINGRESULT_H
 
+#include <QWidget>
 #include <QLayout>
 #include <QTableWidget>
 #include <QLabel>
@@ -8,10 +9,12 @@
 
 #include "common.h"
 
-class CComparingResult : public QVBoxLayout
+class CComparingResult : public QWidget
 {
+	Q_OBJECT
+
 public:
-	CComparingResult();
+	CComparingResult(QWidget * parent = 0);
 	~CComparingResult();
 
 private:	/* 함수 선언부 */

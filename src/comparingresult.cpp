@@ -1,6 +1,6 @@
 #include "comparingresult.h"
 
-CComparingResult::CComparingResult()
+CComparingResult::CComparingResult(QWidget * parent) : QWidget (parent)
 {
 	m_paddingLabel = NULL;
 	m_resultViewTable = NULL;
@@ -10,7 +10,16 @@ CComparingResult::CComparingResult()
 
 CComparingResult::~CComparingResult()
 {
-	/* TODO */
+	if(NULL != m_paddingLabel)
+	{
+		delete m_paddingLabel;
+		m_paddingLabel = NULL;
+	}
+	if(NULL != m_resultViewTable)
+	{
+		delete m_resultViewTable;
+		m_resultViewTable = NULL;
+	}
 }
 
 QLabel * CComparingResult::createLabel (const QString & text)
@@ -20,7 +29,7 @@ QLabel * CComparingResult::createLabel (const QString & text)
 	assert (NULL != label);
 
 	label->setText(text);
-	label->setMinimumHeight(30);
+	label->setFixedHeight(30);
 
 	return label;
 }
@@ -37,8 +46,7 @@ QTableWidget * CComparingResult::createTableWidget ()
 	tableWidget->setHorizontalHeaderLabels(labels);
 	tableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
 	tableWidget->setDisabled(true);
-
-	tableWidget->setMaximumWidth(30);
+	tableWidget->viewport()->setFocusPolicy(Qt::NoFocus);
 
 	return tableWidget;
 }
@@ -51,8 +59,18 @@ void CComparingResult::initLayout ( void )
 	assert (NULL != m_paddingLabel);
 	assert (NULL != m_resultViewTable);
 
-	addWidget(m_paddingLabel);
-	addWidget(m_resultViewTable);
 
-	setSpacing(10);
+	/* 위젯 크기 고정 */
+	setFixedWidth(10);
+
+	QVBoxLayout * layout = new QVBoxLayout;
+	assert (NULL != layout);
+
+//	layout->addWidget(m_paddingLabel);
+//	layout->addWidget(m_resultViewTable);
+
+	layout->setSpacing(10);
+	layout->setContentsMargins(0,0,0,0);
+
+	setLayout(layout);
 }

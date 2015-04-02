@@ -19,12 +19,17 @@ public:
 	~MainWindow();
 
 private slots:
-	void openFiles ( void );
+	void slotOpenFiles ( void );
+
+	void slotRunFileview ( void );
+	void slotSortContents (int column, Qt::SortOrder order);
 
 private:		/* 함수 선언부 */
 	void initMenus ( void );
 	void initLayout ( void );
 	void drawWindowAtCenter ( void );
+
+	void compareFiles ( void );
 
 private:		/* 변수 선언부 */
 	QMenu * m_fileMenu;

@@ -3,25 +3,32 @@
 
 #include <QLayout>
 #include <QLabel>
-#include <QListView>
+#include <QListWidget>
 
 #include "common.h"
 
-class CComparingInformation : public QVBoxLayout
+class CComparingInformation : public QWidget
 {
+	Q_OBJECT
+
 public:
-	CComparingInformation();
+	CComparingInformation(QWidget * parent = 0);
 	~CComparingInformation();
+
+
+public:	/* 함수 선언부 */
+	void addStatusbarListItem (const QString& strItem);
 
 private:	/* 함수 선언부 */
 	void initLayout ( void );
 
 	QLabel * createLabel (const QString & text);
-	QListView * createListView ( void );
+	QListWidget * createListWidget ( void );
+
 
 private:	/* 변수 선언부 */
 	QLabel * m_statusbarLabel;
-	QListView * m_statusbarListView;
+	QListWidget * m_statusbarListWidget;
 };
 
 #endif // CCOMPARINGINFORMATION_H

@@ -13,18 +13,23 @@ TEMPLATE = app
 
 
 SOURCES += src/main.cpp\
-        src/mainwindow.cpp \
-    src/fileview.cpp \
-    src/comparingresult.cpp \
-    src/comparinginformation.cpp
+		src/mainwindow.cpp \
+	src/fileview.cpp \
+	src/comparingresult.cpp \
+	src/comparinginformation.cpp
 
 HEADERS  += src/mainwindow.h \
-    src/common.h \
-    src/fileview.h \
-    src/comparingresult.h \
-    src/comparinginformation.h
+	src/fileview.h \
+	src/comparingresult.h \
+	src/comparinginformation.h \
+	src/common.h
 
 FORMS    +=
 
 RESOURCES += \
-    resource/resource.qrc
+	resource/resource.qrc
+
+TRANSLATIONS += resource/translations/ko_KR.ts
+
+DISTFILES += \
+	resource/translations/ko_KR.ts

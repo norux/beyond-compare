@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>images/openFolder.png</file>
+        <file>translations/ko_KR.qm</file>
     </qresource>
 </RCC>
