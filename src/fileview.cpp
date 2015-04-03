@@ -240,7 +240,7 @@ void CFileView::drawFileEntry(const QString &strDirectory)
 	else	/* false == checkValidationOfDirectory(strDirectory) */
 	{
 		QMessageBox msgAlert;
-		msgAlert.information(this, tr("Cannot Find a Directory"), tr("No Such a Directory: ") + strDirectory);
+		msgAlert.information(this, tr("Error"), tr("No Such a Directory: ") + strDirectory);
 
 		m_pathComboBox->removeItem(m_pathComboBox->currentIndex());
 		return;
