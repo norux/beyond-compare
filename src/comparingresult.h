@@ -13,17 +13,18 @@ class CComparingResult : public QWidget
 {
 	Q_OBJECT
 
-public:
+public: /* 생성,소멸자 */
 	CComparingResult(QWidget * parent = 0);
 	~CComparingResult();
 
-private:	/* 함수 선언부 */
+
+private:	/* Private 함수 선언부 */
 	void initLayout ( void );
 
 	QLabel * createLabel (const QString & text);
 	QTableWidget * createTableWidget ();
 
-private:	/* 변수 선언부 */
+private:	/* Private 변수 선언부 */
 	QLabel * m_paddingLabel;
 	QTableWidget * m_resultViewTable;
 

@@ -34,6 +34,11 @@ CFileView::~CFileView()
 	}
 }
 
+/*
+ * 함  수  명: createComboBox
+ * 파라미터: 1. slot : slot 함수
+ * 리  턴  값: new로 메모리에 할당(생성)된 콤보박스
+*/
 QComboBox * CFileView::createComboBox (const char * slot) const
 {
 	QComboBox * comboBox = new QComboBox;
@@ -143,6 +148,7 @@ QTableWidget * CFileView::createTableWidget () const
 	tableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
 	tableWidget->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
 	tableWidget->setShowGrid(false);
+	tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
 	tableWidget->viewport()->setFocusPolicy(Qt::NoFocus);
 
 	connect (tableWidget->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(slotHeaderSectionClicked(int)));
@@ -160,7 +166,7 @@ QTableWidgetItem * CFileView::createTableWidgetItem (const QString& strItem) con
 
 	tableItem->setText(strItem);
 	tableItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-	tableItem->setFlags(Qt::ItemIsEnabled);
+	tableItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
 	return tableItem;
 }

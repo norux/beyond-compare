@@ -124,6 +124,7 @@ void MainWindow::compareFiles ( void )
 	QString strLeftName;
 	int nRightRow = -1;
 
+	/* 대조군 항목은 일단 빨간색으로 놓은 후, 최종적으로 동일파일 판단 되면 검정색으로 변경한다. */
 	for (int i = 0; i < nTotalRightRows; i++)
 	{
 		m_cRFileView->updateTableWidgetItemColor (i, Qt::red);
@@ -159,11 +160,13 @@ void MainWindow::compareFiles ( void )
 			continue;
 		}
 
+		// 동일파일 판정
 		m_cLFileView->updateTableWidgetItemColor (i, Qt::black);
 		m_cRFileView->updateTableWidgetItemColor (nRightRow, Qt::black);
 		qApp->processEvents();
 	}
 
+	/* 상태메세지 출력 */
 	{
 		QString strMsg = tr("Complete: ") + m_cLFileView->getCurrentPath() + tr(" and ") + m_cRFileView->getCurrentPath();
 		m_cCmpInfo->addStatusbarListItem(strMsg);

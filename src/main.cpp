@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
 	QString locale = QLocale::system().name();
 
 	qDebug() << locale;
+
 	translator.load(":/translations/" + locale);
 	a.installTranslator(&translator);
 
