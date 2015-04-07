@@ -33,12 +33,16 @@ public:	/* set,get 함수 선언부 */
 	QString getSizeStringInTable (int rows) const;
 	QString getTimeStringInTable (int rows) const;
 
+	bool getFileInfoInEntries ( const QString & strName, QFileInfo * pFileInfo );
+
 public: /* Public 함수 선언부 */
 	/* return rows. if cannot find, -1 */
 	int findNameInTable (const QString& strName) const;
 
 	void synchronizeColumnOrder (int column, Qt::SortOrder order);
 	void updateTableWidgetItemColor (int rows, Qt::GlobalColor color);
+
+	void reload ( void );
 
 
 private: /* Private 함수 선언부 */
@@ -47,7 +51,7 @@ private: /* Private 함수 선언부 */
 	/* Create Object  Functions */
 	QComboBox * createComboBox (const char * slot = NULL) const;
 	QLabel * createLabel (const QString & strText) const;
-	QPushButton * createButton (const QString &strText, const char * slot = NULL) const;
+	QPushButton * createButton (const QString &strImage, const char * slot = NULL) const;
 	QTableWidget * createTableWidget () const;
 	QTableWidgetItem * createTableWidgetItem (const QString& strItem) const;
 

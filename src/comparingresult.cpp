@@ -5,6 +5,8 @@ CComparingResult::CComparingResult(QWidget * parent) : QWidget (parent)
 	m_paddingLabel = NULL;
 	m_resultViewTable = NULL;
 
+	m_copyToRightButton = NULL;
+
 	initLayout ();
 }
 
@@ -19,6 +21,11 @@ CComparingResult::~CComparingResult()
 	{
 		delete m_resultViewTable;
 		m_resultViewTable = NULL;
+	}
+	if(NULL != m_copyToRightButton)
+	{
+		delete m_copyToRightButton;
+		m_copyToRightButton = NULL;
 	}
 }
 
@@ -51,23 +58,57 @@ QTableWidget * CComparingResult::createTableWidget ()
 	return tableWidget;
 }
 
+
+QPushButton * CComparingResult::createButton (const QString &strImage, const char * slot) const
+{
+	QPushButton * pushButton = new QPushButton;
+
+	assert (NULL != pushButton);
+	assert (NULL != slot);
+
+	QPixmap icon(strImage);
+	pushButton->setIcon(icon);
+	pushButton->setIconSize(QSize(25,25));
+	pushButton->setStyleSheet("QPushButton{border: none; outline:none;}");
+	pushButton->setFocusPolicy(Qt::NoFocus);
+
+	pushButton->setFixedSize(30, 30);
+
+
+	if (NULL != slot)
+	{
+		connect (pushButton, SIGNAL(clicked()), this, slot);
+	}
+
+	return pushButton;
+}
+
+void CComparingResult::slotCopyButtonClicked ( void )
+{
+	emit copyButtonClicked ();
+}
+
 void CComparingResult::initLayout ( void )
 {
 	m_paddingLabel = createLabel("");
 	m_resultViewTable = createTableWidget();
+	m_copyToRightButton = createButton(":/images/copy.png", SLOT(slotCopyButtonClicked()));
 
 	assert (NULL != m_paddingLabel);
 	assert (NULL != m_resultViewTable);
+	assert (NULL != m_copyToRightButton);
 
 
 	/* 위젯 크기 고정 */
-	setFixedWidth(10);
+//	setFixedWidth(50);
 
 	QVBoxLayout * layout = new QVBoxLayout;
 	assert (NULL != layout);
 
 //	layout->addWidget(m_paddingLabel);
 //	layout->addWidget(m_resultViewTable);
+	layout->addWidget(m_copyToRightButton);
+	layout->addStretch(1);
 
 	layout->setSpacing(10);
 	layout->setContentsMargins(0,0,0,0);

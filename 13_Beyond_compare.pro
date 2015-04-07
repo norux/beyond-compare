@@ -16,13 +16,17 @@ SOURCES += src/main.cpp\
 		src/mainwindow.cpp \
 	src/fileview.cpp \
 	src/comparingresult.cpp \
-	src/comparinginformation.cpp
+	src/comparinginformation.cpp \
+    src/copythread.cpp \
+    src/copyprocess.cpp
 
 HEADERS  += src/mainwindow.h \
 	src/fileview.h \
 	src/comparingresult.h \
 	src/comparinginformation.h \
-	src/common.h
+	src/common.h \
+    src/copythread.h \
+    src/copyprocess.h
 
 FORMS    +=
 

@@ -25,6 +25,11 @@ private:	/* Private 함수 선언부 */
 	QLabel * createLabel (const QString & text);
 	QListWidget * createListWidget ( void );
 
+private slots:	/* Private Slot 선언부 */
+	// none
+
+signals:	/* Signal 선언부 */
+	// none
 
 private:	/* Private 변수 선언부 */
 	QLabel * m_statusbarLabel;

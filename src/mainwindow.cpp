@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_cCmpRes = NULL;
 	m_cCmpInfo = NULL;
 
+	m_cCopyProcess = NULL;
+
+	m_isReload = false;
 
 	/* 메뉴 생성 */
 	initMenus ();
@@ -61,6 +64,11 @@ MainWindow::~MainWindow()
 	{
 		delete m_cCmpInfo;
 		m_cCmpInfo = NULL;
+	}
+	if (NULL != m_cCopyProcess)
+	{
+		delete m_cCopyProcess;
+		m_cCopyProcess = NULL;
 	}
 }
 
@@ -167,6 +175,7 @@ void MainWindow::compareFiles ( void )
 	}
 
 	/* 상태메세지 출력 */
+	if (false == m_isReload)
 	{
 		QString strMsg = tr("Complete: ") + m_cLFileView->getCurrentPath() + tr(" and ") + m_cRFileView->getCurrentPath();
 		m_cCmpInfo->addStatusbarListItem(strMsg);
@@ -179,6 +188,161 @@ void MainWindow::slotSortContents (int column ,Qt::SortOrder order)
 	m_cLFileView->synchronizeColumnOrder(column, order);
 	m_cRFileView->synchronizeColumnOrder(column, order);
 }
+
+void MainWindow::slotCopyFinished (int nResult)
+{
+	if (NULL != m_cCopyProcess)
+	{
+		delete m_cCopyProcess;
+		m_cCopyProcess = NULL;
+	}
+
+	QString strMsg;
+	if(CCopyThread::CopySuccess == nResult)
+	{
+		m_cLFileView->reload();
+		m_cRFileView->reload();
+
+		/* 상태메세지 출력 */
+		strMsg = tr("Copy Completed.");
+		m_cCmpInfo->addStatusbarListItem(strMsg);
+	}
+	else if (CCopyThread::StopWhileCopying == nResult)
+	{
+		/* 상태메세지 출력 */
+		strMsg = tr("Copy Cancled.");
+		m_cCmpInfo->addStatusbarListItem(strMsg);
+	}
+	else if (CCopyThread::CopyFailedDontHavePermission == nResult)
+	{
+		/* 상태메세지 출력 */
+		strMsg = tr("Copy Failed: Doesn't Have Permission");
+		m_cCmpInfo->addStatusbarListItem(strMsg);
+	}
+	else	/* nResult is Unknown */
+	{
+		/* 상태메세지 출력 */
+		strMsg = tr("Unknown Error.");
+		m_cCmpInfo->addStatusbarListItem(strMsg);
+	}
+
+	m_isReload = false;
+}
+
+QFileInfoList MainWindow::obtainFilesCopied( void )
+{
+	QFileInfoList files;
+
+	assert (NULL != m_cLFileView);
+	assert (NULL != m_cRFileView);
+
+	int nTotalLeftRows = m_cLFileView->getTableWidgetRows();
+	QString strLeftName;
+	int nRightRow = -1;
+
+	for (int i = 0; i < nTotalLeftRows; i++)
+	{
+		// Compare Name
+		strLeftName = m_cLFileView->getNameStringInTable(i);
+		nRightRow = m_cRFileView->findNameInTable(strLeftName);
+
+		QFileInfo fileInfo;
+
+		if (false == m_cLFileView->getFileInfoInEntries (strLeftName, &fileInfo))
+		{
+			qDebug() << "getFileInfoInEntries Error";
+			break;
+		}
+
+		if (-1 == nRightRow)
+		{
+
+			files << fileInfo;
+
+			qApp->processEvents();
+			continue;
+		}
+
+		// Compare Size
+		if (m_cLFileView->getSizeStringInTable(i) != m_cRFileView->getSizeStringInTable(nRightRow))
+		{
+			files << fileInfo;
+			qApp->processEvents();
+			continue;
+		}
+
+		// Compare Mod Time
+		if (m_cLFileView->getTimeStringInTable(i) != m_cRFileView->getTimeStringInTable(nRightRow))
+		{
+			files << fileInfo;
+			qApp->processEvents();
+			continue;
+		}
+
+		// 동일파일 판정
+		qApp->processEvents();
+	}
+
+
+	return files;
+}
+
+void MainWindow::slotFileNameCopied (QString strFileName)
+{
+	/* 상태메세지 출력 */
+	{
+		QString strMsg;
+		if (false == strFileName.isEmpty())
+		{
+			strMsg = strFileName + " Copied..";
+		}
+		else /* true == strName.isEmpty() */
+		{
+			// do nothing
+		}
+
+		m_cCmpInfo->addStatusbarListItem(strMsg);
+	}
+}
+
+void MainWindow::slotCopyStart (void )
+{
+	if (NULL != m_cCopyProcess)
+	{
+		qDebug() << "Alread Copy Process.";
+		return;
+	}
+
+	if (m_cLFileView->isRunning() && m_cRFileView->isRunning())
+	{
+		QString strRightPath = m_cRFileView->getCurrentPath();
+
+		QFileInfoList files = obtainFilesCopied();
+
+		if (true == files.isEmpty())
+		{
+			QMessageBox::information(this, tr("Information"), tr("There are no files to be copied."));
+		}
+		else
+		{
+			m_cCopyProcess = new CCopyProcess(this);
+
+			assert (NULL != m_cCopyProcess);
+
+			connect (m_cCopyProcess, SIGNAL(fileNameCopyFinished(QString)), this, SLOT(slotFileNameCopied(QString)));
+			connect (m_cCopyProcess, SIGNAL(finished(int)), this, SLOT(slotCopyFinished(int)));
+
+			m_cCopyProcess->runCopy(files, strRightPath);
+		}
+	}
+	else
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Invalid Path"));
+	}
+
+	m_isReload = true;
+}
+
 
 /*
  * 함  수  명: initLayout
@@ -205,6 +369,8 @@ void MainWindow::initLayout ( void )
 	connect (m_cRFileView, SIGNAL(beRun()), this, SLOT(slotRunFileview()));
 	connect (m_cLFileView, SIGNAL(sortBySectionClicked(int, Qt::SortOrder)), this, SLOT(slotSortContents(int, Qt::SortOrder)));
 	connect (m_cRFileView, SIGNAL(sortBySectionClicked(int, Qt::SortOrder)), this, SLOT(slotSortContents(int, Qt::SortOrder)));
+
+	connect (m_cCmpRes, SIGNAL(copyButtonClicked()), this, SLOT(slotCopyStart()));
 
 	mainLayout->addWidget (m_cLFileView, 0, 0);
 	mainLayout->addWidget (m_cRFileView, 0, 2);

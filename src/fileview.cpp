@@ -68,15 +68,16 @@ QLabel * CFileView::createLabel (const QString & strText) const
 	return label;
 }
 
-QPushButton * CFileView::createButton (const QString &strText, const char * slot) const
+QPushButton * CFileView::createButton (const QString &strImage, const char * slot) const
 {
 	QPushButton * pushButton = new QPushButton;
 
 	assert (NULL != pushButton);
+	assert (NULL != slot);
 
 	pushButton->setFixedSize(30, 30);
 
-	QPixmap icon(strText);
+	QPixmap icon(strImage);
 	pushButton->setIcon(icon);
 	pushButton->setIconSize(QSize(25, 25));
 	pushButton->setStyleSheet("QPushButton{border: none; outline:none;}");
@@ -93,6 +94,12 @@ QPushButton * CFileView::createButton (const QString &strText, const char * slot
 void CFileView::slotHeaderSectionClicked(int column)
 {
 	Qt::SortOrder sortOrder = m_fileviewTable->horizontalHeader()->sortIndicatorOrder();
+
+	/* size 컬럼일때, int로 변환하여 Sort */
+	if (column == 1)
+	{
+		// TODO
+	}
 
 	emit sortBySectionClicked (column, sortOrder);
 }
@@ -239,8 +246,7 @@ void CFileView::drawFileEntry(const QString &strDirectory)
 	}
 	else	/* false == checkValidationOfDirectory(strDirectory) */
 	{
-		QMessageBox msgAlert;
-		msgAlert.information(this, tr("Error"), tr("No Such a Directory: ") + strDirectory);
+		QMessageBox::critical(this, tr("Error"), tr("No Such a Directory: ") + strDirectory);
 
 		m_pathComboBox->removeItem(m_pathComboBox->currentIndex());
 		return;
@@ -261,7 +267,6 @@ void CFileView::drawFileEntry(const QString &strDirectory)
 		// ignore . , .. and symbolic link
 		if ("." == iter->fileName() || ".." == iter->fileName() || true ==  iter->isSymLink())
 		{
-			qDebug() << "Ignore: " << iter->fileName();
 			continue;
 		}
 
@@ -270,7 +275,7 @@ void CFileView::drawFileEntry(const QString &strDirectory)
 
 		QTableWidgetItem * nameItem = createTableWidgetItem(iter->fileName());
 		QTableWidgetItem * sizeItem = createTableWidgetItem(QString::number(iter->size()));
-		QTableWidgetItem * timeItem = createTableWidgetItem(iter->lastModified().toString("yyyy-MM-dd AP h:mm:ss"));
+		QTableWidgetItem * timeItem = createTableWidgetItem(iter->lastModified().toString("yyyy-MM-dd AP hh:mm:ss"));
 
 		assert (NULL != nameItem);
 		assert (NULL != sizeItem);
@@ -298,7 +303,6 @@ bool CFileView::checkValidationOfDirctory (const QString &strDirectory) const
 {
 	int nDirLength = strDirectory.length();
 
-	assert (0 != nDirLength);
 	if (0 == nDirLength)
 	{
 		return false;
@@ -322,37 +326,10 @@ bool CFileView::checkValidationOfDirctory (const QString &strDirectory) const
 		return false;
 	}
 
-	qDebug() << "Directory: " << strDirectory ;
-
 	return true;
 }
 
-void CFileView::initLayout ( void )
-{
-	m_pathComboBox = createComboBox (SLOT(slotPathComboBoxActivated(QString)));
-	m_pathLabel = createLabel(tr("Path"));
-	m_fileviewTable = createTableWidget();
-	m_dirButton = createButton(":/images/openFolder.png", SLOT(slotDirButtonClicked()));
 
-	assert (NULL != m_pathComboBox);
-	assert (NULL != m_pathLabel);
-	assert (NULL != m_fileviewTable);
-	assert (NULL != m_dirButton);
-
-
-	QGridLayout * layout = new QGridLayout;
-	assert (NULL != layout);
-
-	layout->addWidget(m_pathLabel, 0,0);
-	layout->addWidget(m_pathComboBox, 0, 1);
-	layout->addWidget(m_dirButton, 0, 2);
-	layout->addWidget(m_fileviewTable, 2, 0, 1, 3);
-
-	layout->setContentsMargins(0,0,0,0);
-	layout->setSpacing(10);
-
-	setLayout(layout);
-}
 
 bool CFileView::isRunning ( void ) const
 {
@@ -371,7 +348,17 @@ QString CFileView::getCurrentPath ( void ) const
 {
 	assert (NULL != m_pathComboBox);
 
-	return m_pathComboBox->currentText();
+	QString strPath = m_pathComboBox->currentText();
+
+	if ( true == checkValidationOfDirctory (strPath))
+	{
+		return strPath;
+	}
+	else
+	{
+		// do nothing
+		return "";
+	}
 }
 
 int CFileView::getTableWidgetRows ( void ) const
@@ -409,6 +396,21 @@ QString CFileView::getTimeStringInTable (int rows) const
 	assert (rows < nRows);
 
 	return m_fileviewTable->item(rows, 2)->text();
+}
+
+bool CFileView::getFileInfoInEntries ( const QString & strName, QFileInfo * pFileInfo)
+{
+	assert (false == m_fileEntries.isEmpty());
+
+	for (QFileInfoList::iterator iter = m_fileEntries.begin(); iter != m_fileEntries.end(); iter ++)
+	{
+		if ( strName == iter->fileName())
+		{
+			*pFileInfo = *iter;
+			return true;
+		}
+	}
+	return false;
 }
 
 /* return rows. if cannot find, -1  */
@@ -460,4 +462,39 @@ void CFileView::updateTableWidgetItemColor (int rows, Qt::GlobalColor color)
 	nameItem->setTextColor(color);
 	sizeItem->setTextColor(color);
 	timeItem->setTextColor(color);
+}
+
+void CFileView::reload ( void )
+{
+	QString strPath = m_pathComboBox->currentText();
+
+	drawFileEntry(strPath);
+}
+
+
+void CFileView::initLayout ( void )
+{
+	m_pathComboBox = createComboBox (SLOT(slotPathComboBoxActivated(QString)));
+	m_pathLabel = createLabel(tr("Path"));
+	m_fileviewTable = createTableWidget();
+	m_dirButton = createButton(":/images/openFolder.png", SLOT(slotDirButtonClicked()));
+
+	assert (NULL != m_pathComboBox);
+	assert (NULL != m_pathLabel);
+	assert (NULL != m_fileviewTable);
+	assert (NULL != m_dirButton);
+
+
+	QGridLayout * layout = new QGridLayout;
+	assert (NULL != layout);
+
+	layout->addWidget(m_pathLabel, 0,0);
+	layout->addWidget(m_pathComboBox, 0, 1);
+	layout->addWidget(m_dirButton, 0, 2);
+	layout->addWidget(m_fileviewTable, 2, 0, 1, 3);
+
+	layout->setContentsMargins(0,0,0,0);
+	layout->setSpacing(10);
+
+	setLayout(layout);
 }
