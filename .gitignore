@@ -7,7 +7,7 @@ build
 *.so
 
 # Excutable
-beyond_compare
+beyond-compare
 
 # Mac
 .DS_Store
